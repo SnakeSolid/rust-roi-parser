@@ -39,13 +39,13 @@
             {{ initiative.name }}
           </option>
         </select>
-        <div
+        <button
           class="ui primary button"
           :class="{ disabled: !isSelected() }"
           @click="showVotes"
         >
           Show
-        </div>
+        </button>
       </div>
 
       <div class="ui basic segment"><!-- separator --></div>

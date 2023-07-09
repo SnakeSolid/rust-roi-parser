@@ -35,13 +35,13 @@
           placeholder="https://www.roi.ru/******/"
           v-model="url"
         />
-        <div
+        <button
           class="ui primary button"
           :class="{ disabled: !isUrlValid(), loading: loading }"
           @click="addInitiative"
         >
           Add Initiative
-        </div>
+        </button>
       </div>
 
       <table class="ui compact striped selectable table" v-if="hasItems()">
