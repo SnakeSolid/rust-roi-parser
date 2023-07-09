@@ -66,6 +66,7 @@ const difference_schema = {
     color: {
       field: "type",
       type: "nominal",
+      scale: { domain: ["negative", "positive", "zero"] },
       legend: null,
     },
   },
@@ -296,24 +297,24 @@ const application = Vue.createApp({
                   value: 0,
                 },
               ]);
-            const positive = data.items
-              .filter((row, index, data) => index > data.length - 30 * 24)
-              .map((row, index, data) => {
+            const positive = this.hourlyData(data.items, 720).map(
+              (row, index, data) => {
                 return {
                   datetime: row.datetime,
                   value:
                     index > 0 ? row.positive - data[index - 1].positive : 0,
                 };
-              });
-            const negative = data.items
-              .filter((row, index, data) => index > data.length - 30 * 24)
-              .map((row, index, data) => {
+              },
+            );
+            const negative = this.hourlyData(data.items, 720).map(
+              (row, index, data) => {
                 return {
                   datetime: row.datetime,
                   value:
                     index > 0 ? row.negative - data[index - 1].negative : 0,
                 };
-              });
+              },
+            );
 
             votes_schema.title.text = this.splitTitle(this.selected.name, 90);
             votes_schema.data.values = votes;
@@ -356,6 +357,34 @@ const application = Vue.createApp({
         });
 
       this.loading = true;
+    },
+
+    hourlyData(items, length) {
+      const hours = new Set();
+      const result = [];
+
+      for (let index = items.length - 1; index >= 0; index -= 1) {
+        const row = items[index];
+        const hour = row.datetime.substring(0, 13) + ":00:00";
+
+        if (!hours.has(hour)) {
+          result.push({
+            datetime: hour,
+            positive: row.positive,
+            negative: row.negative,
+          });
+
+          if (result.length >= length) {
+            break;
+          }
+
+          hours.add(hour);
+        }
+      }
+
+      result.reverse();
+
+      return result;
     },
 
     splitTitle(text, length) {
