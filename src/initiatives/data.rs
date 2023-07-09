@@ -46,33 +46,6 @@ pub struct ReplyItem {
     is_active: bool,
 }
 
-impl ReplyItem {
-    pub fn new(id: u32, name: String, is_archived: bool, is_active: bool) -> Self {
-        Self {
-            id,
-            name,
-            is_archived,
-            is_active,
-        }
-    }
-
-    pub fn id(&self) -> u32 {
-        self.id
-    }
-
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-
-    pub fn is_archived(&self) -> bool {
-        self.is_archived
-    }
-
-    pub fn is_active(&self) -> bool {
-        self.is_active
-    }
-}
-
 impl From<InitiativeData> for ReplyItem {
     fn from(value: InitiativeData) -> Self {
         Self {

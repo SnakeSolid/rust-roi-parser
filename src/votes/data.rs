@@ -41,28 +41,6 @@ pub struct ReplyItem {
     negative: u32,
 }
 
-impl ReplyItem {
-    pub fn new(datetime: String, positive: u32, negative: u32) -> Self {
-        Self {
-            datetime,
-            positive,
-            negative,
-        }
-    }
-
-    pub fn datetime(&self) -> &str {
-        &self.datetime
-    }
-
-    pub fn positive(&self) -> u32 {
-        self.positive
-    }
-
-    pub fn negative(&self) -> u32 {
-        self.negative
-    }
-}
-
 impl TryFrom<VoteData> for ReplyItem {
     type Error = Box<dyn Error>;
 
