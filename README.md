@@ -3,6 +3,8 @@
 Crawler and WEB server to track and manage initiatives on ROI site. Parser periodically scan all initiatives and save
 vote count for every initiative.
 
+![User interface](images/roi-parser.png "User interface of ROI Parser")
+
 ## Build
 
 To build `roi-parser` from source code use following command:
