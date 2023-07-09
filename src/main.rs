@@ -30,12 +30,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let database = Database::new(options.database())?;
 
     info!("Start worker...");
-    let worker = tokio::spawn(worker::start(
-        options.query_interval(),
-        options.update_interval(),
-        client.clone(),
-        database.clone(),
-    ));
+    let worker = match options.no_worker() {
+        false => Some(tokio::spawn(worker::start(
+            options.query_interval(),
+            options.update_interval(),
+            client.clone(),
+            database.clone(),
+        ))),
+        true => None,
+    };
 
     info!("Create routes...");
     let index = warp::get()
@@ -87,7 +90,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     warp::serve(routes)
         .run((options.address().clone(), options.port()))
         .await;
-    worker.await?;
+
+    if let Some(worker) = worker {
+        worker.await?;
+    }
 
     Ok(())
 }
