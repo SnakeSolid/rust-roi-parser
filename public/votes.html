@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Votes - ROI Parser</title>
+    <link rel="shortcut icon" type="image/jpg" href="/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/5.25.0/vega.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/5.13.0/vega-lite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/6.22.1/vega-embed.min.js"></script>
+    <script src="/votes.js" defer="defer"></script>
+  </head>
+  <body>
+    <div class="ui inverted menu">
+      <a class="item" href="/initiatives.html">Initiatives</a>
+      <a class="active item">Votes</a>
+    </div>
+
+    <div id="app" class="ui container">
+      <h2>Initiative Votes</h2>
+
+      <div class="ui negative message" v-if="error">
+        <div class="header">Error</div>
+        {{ message }}
+      </div>
+
+      <div class="ui fluid labeled action input">
+        <div class="ui label">ROI initiative:</div>
+        <select class="ui fluid dropdown" v-model="selected">
+          <option
+            v-for="initiative in initiatives"
+            :key="initiative.id"
+            :value="initiative"
+          >
+            {{ initiative.name }}
+          </option>
+        </select>
+        <div
+          class="ui primary button"
+          :class="{ disabled: !isSelected() }"
+          @click="showVotes"
+        >
+          Show
+        </div>
+      </div>
+
+      <div class="ui basic segment"><!-- separator --></div>
+
+      <div v-show="showCharts">
+        <div class="ui vertical segment"><div id="votes-chart"></div></div>
+        <div class="ui vertical segment"><div id="difference-chart"></div></div>
+        <div class="ui vertical segment"><div id="positive-chart"></div></div>
+        <div class="ui vertical segment"><div id="negative-chart"></div></div>
+      </div>
+
+      <div class="ui basic segment"><!-- separator --></div>
+    </div>
+  </body>
+</html>

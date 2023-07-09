@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Initiatives - ROI Parser</title>
+    <link rel="shortcut icon" type="image/jpg" href="/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
+    <script src="/initiatives.js" defer="defer"></script>
+  </head>
+  <body>
+    <div class="ui inverted menu">
+      <a class="active item">Initiatives</a>
+      <a class="item" href="/votes.html">Votes</a>
+    </div>
+
+    <div id="app" class="ui container">
+      <h2>All Initiatives</h2>
+
+      <div class="ui negative message" v-if="error">
+        <div class="header">Error</div>
+        {{ message }}
+      </div>
+
+      <div
+        class="ui fluid labeled action input"
+        :class="{ error: isUrlError() }"
+      >
+        <div class="ui label">ROI initiative URL:</div>
+        <input
+          type="text"
+          placeholder="https://www.roi.ru/******/"
+          v-model="url"
+        />
+        <div
+          class="ui primary button"
+          :class="{ disabled: !isUrlValid(), loading: loading }"
+          @click="addInitiative"
+        >
+          Add Initiative
+        </div>
+      </div>
+
+      <table class="ui compact striped selectable table" v-if="hasItems()">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody v-for="item in items">
+          <tr>
+            <td class="right aligned">
+              <a :href="initiativeLink(item)">#{{ item.id }}</a>
+            </td>
+            <td :class="{ disabled: item.is_archived }">{{ item.name }}</td>
+            <td>
+              <template v-if="item.is_archived"
+                ><button
+                  class="fluid compact ui small negative button"
+                  :class="{ loading: loading }"
+                  @click="removeInitiative(item)"
+                >
+                  Remove
+                </button></template
+              >
+              <template v-if="!item.is_archived && item.is_active">
+                <div class="fluid compact ui small buttons">
+                  <button
+                    class="ui button"
+                    :class="{ loading: loading }"
+                    @click="disableInitiative(item)"
+                  >
+                    Disable
+                  </button>
+                  <button
+                    class="ui negative button"
+                    :class="{ loading: loading }"
+                    @click="removeInitiative(item)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </template>
+              <template v-if="!item.is_archived && !item.is_active">
+                <div class="fluid compact ui small buttons">
+                  <button
+                    class="ui positive button"
+                    :class="{ loading: loading }"
+                    @click="enableInitiative(item)"
+                  >
+                    Enable
+                  </button>
+                  <button
+                    class="ui negative button"
+                    :class="{ loading: loading }"
+                    @click="removeInitiative(item)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p v-else>There is no initiatives yet</p>
+    </div>
+  </body>
+</html>
