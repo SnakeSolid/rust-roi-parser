@@ -8,11 +8,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/5.25.0/vega.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/5.13.0/vega-lite.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/6.22.1/vega-embed.min.js"></script>
-    <script src="/votes.js" defer="defer"></script>
+    <link rel="stylesheet" href="/cloak.css" />
+    <script
+      data-main="/votes/main"
+      src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"
+      async
+    ></script>
   </head>
   <body>
     <div class="ui inverted menu">
@@ -20,7 +21,7 @@
       <a class="active item">Votes</a>
     </div>
 
-    <div id="app" class="ui container">
+    <div id="app" class="ui container" v-cloak>
       <h2>Initiative Votes</h2>
 
       <div class="ui negative message" v-if="error">
