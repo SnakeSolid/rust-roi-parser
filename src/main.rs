@@ -76,6 +76,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .and(warp::body::json())
         .and(with(database.clone()))
         .and_then(votes::list);
+    let votes_hourly = warp::path!("api" / "votes" / "hourly")
+        .and(warp::post())
+        .and(warp::body::json())
+        .and(with(database.clone()))
+        .and_then(votes::hourly);
 
     let routes = index
         .or(initiatives_list)
@@ -84,6 +89,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .or(initiatives_disable)
         .or(initiatives_remove)
         .or(votes_list)
+        .or(votes_hourly)
         .or(public);
 
     info!("Starting server...");

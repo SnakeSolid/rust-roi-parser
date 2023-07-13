@@ -54,15 +54,24 @@ define(["vue", "vega-embed", "config", "util"], function (
         },
 
         showVotes() {
-          fetch("/api/votes/list", {
+          const list = fetch("/api/votes/list", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: this.selected.id }),
-          })
-            .then((data) => data.json())
+          }).then((data) => data.json());
+          const hourly = fetch("api/votes/hourly", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: this.selected.id, hours: 720 }),
+          }).then((data) => data.json());
+
+          Promise.all([list, hourly])
             .then((data) => {
-              if (data.success) {
-                const votes = data.items
+              const list = data[0];
+              const hourly = data[1];
+
+              if (list.success && hourly.success) {
+                const votes = list.items
                   .map((row) => {
                     return {
                       datetime: row.datetime,
@@ -71,7 +80,7 @@ define(["vue", "vega-embed", "config", "util"], function (
                     };
                   })
                   .concat(
-                    data.items.map((row) => {
+                    list.items.map((row) => {
                       return {
                         datetime: row.datetime,
                         type: "negative",
@@ -79,7 +88,7 @@ define(["vue", "vega-embed", "config", "util"], function (
                       };
                     }),
                   );
-                const difference = data.items
+                const difference = list.items
                   .map((row) => {
                     return {
                       datetime: row.datetime,
@@ -90,7 +99,7 @@ define(["vue", "vega-embed", "config", "util"], function (
                   })
                   .concat([
                     {
-                      datetime: data.items.reduce(
+                      datetime: list.items.reduce(
                         (accumulator, row) =>
                           accumulator === null || accumulator > row.datetime
                             ? row.datetime
@@ -101,7 +110,7 @@ define(["vue", "vega-embed", "config", "util"], function (
                       value: 0,
                     },
                     {
-                      datetime: data.items.reduce(
+                      datetime: list.items.reduce(
                         (accumulator, row) =>
                           accumulator === null || accumulator < row.datetime
                             ? row.datetime
@@ -112,24 +121,20 @@ define(["vue", "vega-embed", "config", "util"], function (
                       value: 0,
                     },
                   ]);
-                const positive = util
-                  .hourlyData(data.items, 720)
-                  .map((row, index, data) => {
-                    return {
-                      datetime: row.datetime,
-                      value:
-                        index > 0 ? row.positive - data[index - 1].positive : 0,
-                    };
-                  });
-                const negative = util
-                  .hourlyData(data.items, 720)
-                  .map((row, index, data) => {
-                    return {
-                      datetime: row.datetime,
-                      value:
-                        index > 0 ? row.negative - data[index - 1].negative : 0,
-                    };
-                  });
+                const positive = hourly.items.map((row, index, data) => {
+                  return {
+                    datetime: row.datetime,
+                    value:
+                      index > 0 ? row.positive - data[index - 1].positive : 0,
+                  };
+                });
+                const negative = hourly.items.map((row, index, data) => {
+                  return {
+                    datetime: row.datetime,
+                    value:
+                      index > 0 ? row.negative - data[index - 1].negative : 0,
+                  };
+                });
 
                 vega(
                   "#votes-chart",
