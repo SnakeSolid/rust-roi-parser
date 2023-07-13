@@ -161,7 +161,7 @@ impl Database {
             let timestamp = query.read(0)?;
             let positive: i64 = query.read(1)?;
             let negative: i64 = query.read(2)?;
-            let item = VoteData::new(id, timestamp, positive as u32, negative as u32);
+            let item = VoteData::new(timestamp, positive as u32, negative as u32);
 
             result.push(item);
         }

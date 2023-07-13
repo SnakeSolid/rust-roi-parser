@@ -35,24 +35,18 @@ impl InitiativeData {
 
 #[derive(Debug)]
 pub struct VoteData {
-    initiative_id: u32,
     timestamp: i64,
     positive: u32,
     negative: u32,
 }
 
 impl VoteData {
-    pub fn new(initiative_id: u32, timestamp: i64, positive: u32, negative: u32) -> Self {
+    pub fn new(timestamp: i64, positive: u32, negative: u32) -> Self {
         Self {
-            initiative_id,
             timestamp,
             positive,
             negative,
         }
-    }
-
-    pub fn initiative_id(&self) -> u32 {
-        self.initiative_id
     }
 
     pub fn timestamp(&self) -> i64 {
