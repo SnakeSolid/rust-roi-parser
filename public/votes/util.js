@@ -1,5 +1,86 @@
 define(function () {
+  const minDatetime = function (items) {
+    return items.reduce(
+      (accumulator, row) =>
+        accumulator === null || accumulator > row.datetime
+          ? row.datetime
+          : accumulator,
+      null,
+    );
+  };
+
+  const maxDatetime = function (items) {
+    return items.reduce(
+      (accumulator, row) =>
+        accumulator === null || accumulator < row.datetime
+          ? row.datetime
+          : accumulator,
+      null,
+    );
+  };
+
   return {
+    toPositiveNegative(items) {
+      return items
+        .map((row) => {
+          return {
+            datetime: row.datetime,
+            type: "positive",
+            value: row.positive,
+          };
+        })
+        .concat(
+          items.map((row) => {
+            return {
+              datetime: row.datetime,
+              type: "negative",
+              value: row.negative,
+            };
+          }),
+        );
+    },
+
+    toDifference(items) {
+      return items
+        .map((row) => {
+          return {
+            datetime: row.datetime,
+            type: row.positive >= row.negative ? "positive" : "negative",
+            value: row.positive - row.negative,
+          };
+        })
+        .concat([
+          {
+            datetime: minDatetime(items),
+            type: "zero",
+            value: 0,
+          },
+          {
+            datetime: maxDatetime(items),
+            type: "zero",
+            value: 0,
+          },
+        ]);
+    },
+
+    toPositiveDeltas(items) {
+      return items.map((row, index, data) => {
+        return {
+          datetime: row.datetime,
+          value: index > 0 ? row.positive - data[index - 1].positive : 0,
+        };
+      });
+    },
+
+    toNegativeDeltas(items) {
+      return items.map((row, index, data) => {
+        return {
+          datetime: row.datetime,
+          value: index > 0 ? row.negative - data[index - 1].negative : 0,
+        };
+      });
+    },
+
     splitTitle(text, length) {
       if (text.length <= length) {
         return [text];

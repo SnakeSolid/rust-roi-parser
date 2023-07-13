@@ -71,70 +71,10 @@ define(["vue", "vega-embed", "config", "util"], function (
               const hourly = data[1];
 
               if (list.success && hourly.success) {
-                const votes = list.items
-                  .map((row) => {
-                    return {
-                      datetime: row.datetime,
-                      type: "positive",
-                      value: row.positive,
-                    };
-                  })
-                  .concat(
-                    list.items.map((row) => {
-                      return {
-                        datetime: row.datetime,
-                        type: "negative",
-                        value: row.negative,
-                      };
-                    }),
-                  );
-                const difference = list.items
-                  .map((row) => {
-                    return {
-                      datetime: row.datetime,
-                      type:
-                        row.positive >= row.negative ? "positive" : "negative",
-                      value: row.positive - row.negative,
-                    };
-                  })
-                  .concat([
-                    {
-                      datetime: list.items.reduce(
-                        (accumulator, row) =>
-                          accumulator === null || accumulator > row.datetime
-                            ? row.datetime
-                            : accumulator,
-                        null,
-                      ),
-                      type: "zero",
-                      value: 0,
-                    },
-                    {
-                      datetime: list.items.reduce(
-                        (accumulator, row) =>
-                          accumulator === null || accumulator < row.datetime
-                            ? row.datetime
-                            : accumulator,
-                        null,
-                      ),
-                      type: "zero",
-                      value: 0,
-                    },
-                  ]);
-                const positive = hourly.items.map((row, index, data) => {
-                  return {
-                    datetime: row.datetime,
-                    value:
-                      index > 0 ? row.positive - data[index - 1].positive : 0,
-                  };
-                });
-                const negative = hourly.items.map((row, index, data) => {
-                  return {
-                    datetime: row.datetime,
-                    value:
-                      index > 0 ? row.negative - data[index - 1].negative : 0,
-                  };
-                });
+                const votes = util.toPositiveNegative(list.items);
+                const difference = util.toDifference(list.items);
+                const positive = util.toPositiveDeltas(hourly.items);
+                const negative = util.toNegativeDeltas(hourly.items);
 
                 vega(
                   "#votes-chart",
