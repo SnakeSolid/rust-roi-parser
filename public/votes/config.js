@@ -203,8 +203,9 @@ define(["util"], function (util) {
   return {
     votes(titleText, values) {
       const title = util.splitTitle(titleText, TITLE_WIDTH);
+      const data = util.toPositiveNegative(values);
 
-      return configForSchema(VOTES_SCHEMA, title, values);
+      return configForSchema(VOTES_SCHEMA, title, data);
     },
 
     difference(titleText, values) {
@@ -212,8 +213,9 @@ define(["util"], function (util) {
         titleText + " (разница голосов 'За' и 'Против')",
         TITLE_WIDTH,
       );
+      const data = util.toDifference(values);
 
-      return configForSchema(DIFFERENCE_SCHEMA, title, values);
+      return configForSchema(DIFFERENCE_SCHEMA, title, data);
     },
 
     positive(titleText, values) {
@@ -221,8 +223,9 @@ define(["util"], function (util) {
         titleText + " (изменение числа голосов 'За')",
         TITLE_WIDTH,
       );
+      const data = util.toPositiveDeltas(values);
 
-      return configForSchema(POSITIVE_SCHEMA, title, values);
+      return configForSchema(POSITIVE_SCHEMA, title, data);
     },
 
     negative(titleText, values) {
@@ -230,8 +233,9 @@ define(["util"], function (util) {
         titleText + " (изменение числа голосов 'Против')",
         TITLE_WIDTH,
       );
+      const data = util.toNegativeDeltas(values);
 
-      return configForSchema(NEGATIVE_SCHEMA, title, values);
+      return configForSchema(NEGATIVE_SCHEMA, title, data);
     },
   };
 });

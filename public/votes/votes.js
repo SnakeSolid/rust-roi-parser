@@ -72,15 +72,11 @@ define(["vue", "vega-embed", "config", "util"], function (
 
               if (list.success && hourly.success) {
                 const title = this.selected.name;
-                const votes = util.toPositiveNegative(list.items);
-                const difference = util.toDifference(list.items);
-                const positive = util.toPositiveDeltas(hourly.items);
-                const negative = util.toNegativeDeltas(hourly.items);
 
-                vega("#votes-chart", config.votes(title, votes));
-                vega("#difference-chart", config.difference(title, difference));
-                vega("#positive-chart", config.positive(title, positive));
-                vega("#negative-chart", config.negative(title, negative));
+                vega("#votes-chart", config.votes(title, list.items));
+                vega("#difference-chart", config.difference(title, list.items));
+                vega("#positive-chart", config.positive(title, hourly.items));
+                vega("#negative-chart", config.negative(title, hourly.items));
 
                 this.showCharts = true;
                 this.error = false;
