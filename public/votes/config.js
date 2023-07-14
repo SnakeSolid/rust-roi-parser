@@ -1,4 +1,6 @@
-define(function () {
+define(["util"], function (util) {
+  const TITLE_WIDTH = 90;
+
   const VOTES_SCHEMA = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     width: 1127,
@@ -200,19 +202,36 @@ define(function () {
 
   return {
     votes(titleText, values) {
-      return configForSchema(VOTES_SCHEMA, titleText, values);
+      const title = util.splitTitle(titleText, TITLE_WIDTH);
+
+      return configForSchema(VOTES_SCHEMA, title, values);
     },
 
     difference(titleText, values) {
-      return configForSchema(DIFFERENCE_SCHEMA, titleText, values);
+      const title = util.splitTitle(
+        titleText + " (разница голосов 'За' и 'Против')",
+        TITLE_WIDTH,
+      );
+
+      return configForSchema(DIFFERENCE_SCHEMA, title, values);
     },
 
     positive(titleText, values) {
-      return configForSchema(POSITIVE_SCHEMA, titleText, values);
+      const title = util.splitTitle(
+        titleText + " (изменение числа голосов 'За')",
+        TITLE_WIDTH,
+      );
+
+      return configForSchema(POSITIVE_SCHEMA, title, values);
     },
 
     negative(titleText, values) {
-      return configForSchema(NEGATIVE_SCHEMA, titleText, values);
+      const title = util.splitTitle(
+        titleText + " (изменение числа голосов 'Против')",
+        TITLE_WIDTH,
+      );
+
+      return configForSchema(NEGATIVE_SCHEMA, title, values);
     },
   };
 });

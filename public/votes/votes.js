@@ -71,46 +71,16 @@ define(["vue", "vega-embed", "config", "util"], function (
               const hourly = data[1];
 
               if (list.success && hourly.success) {
+                const title = this.selected.name;
                 const votes = util.toPositiveNegative(list.items);
                 const difference = util.toDifference(list.items);
                 const positive = util.toPositiveDeltas(hourly.items);
                 const negative = util.toNegativeDeltas(hourly.items);
 
-                vega(
-                  "#votes-chart",
-                  config.votes(util.splitTitle(this.selected.name, 90), votes),
-                );
-                vega(
-                  "#difference-chart",
-                  config.difference(
-                    util.splitTitle(
-                      this.selected.name + " (разница голосов 'За' и 'Против')",
-                      90,
-                    ),
-                    difference,
-                  ),
-                );
-                vega(
-                  "#positive-chart",
-                  config.positive(
-                    util.splitTitle(
-                      this.selected.name + " (изменение числа голосов 'За')",
-                      90,
-                    ),
-                    positive,
-                  ),
-                );
-                vega(
-                  "#negative-chart",
-                  config.negative(
-                    util.splitTitle(
-                      this.selected.name +
-                        " (изменение числа голосов 'Против')",
-                      90,
-                    ),
-                    negative,
-                  ),
-                );
+                vega("#votes-chart", config.votes(title, votes));
+                vega("#difference-chart", config.difference(title, difference));
+                vega("#positive-chart", config.positive(title, positive));
+                vega("#negative-chart", config.negative(title, negative));
 
                 this.showCharts = true;
                 this.error = false;
