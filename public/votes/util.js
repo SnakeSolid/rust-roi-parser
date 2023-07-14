@@ -20,6 +20,22 @@ define(function () {
   };
 
   return {
+    maxPositive(items) {
+      return items.reduce(
+        (accumulator, row) =>
+          accumulator < row.positive ? row.positive : accumulator,
+        0,
+      );
+    },
+
+    maxNegative(items) {
+      return items.reduce(
+        (accumulator, row) =>
+          accumulator < row.negative ? row.negative : accumulator,
+        0,
+      );
+    },
+
     toPositiveNegative(items) {
       return items
         .map((row) => {

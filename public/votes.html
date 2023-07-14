@@ -52,6 +52,16 @@
       <div class="ui basic segment"><!-- separator --></div>
 
       <div v-show="showCharts">
+        <h2 class="ui center aligned dividing header">
+          <span>
+            <i class="green thumbs up icon"></i>
+            <div class="content">{{ positive }}</div>
+            &emsp;
+            <i class="red thumbs down icon"></i>
+            <div class="content">{{ negative }}</div>
+          </span>
+        </h2>
+
         <div class="ui vertical segment"><div id="votes-chart"></div></div>
         <div class="ui vertical segment"><div id="difference-chart"></div></div>
         <div class="ui vertical segment"><div id="positive-chart"></div></div>

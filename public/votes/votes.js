@@ -16,6 +16,8 @@ define(["vue", "vega-embed", "config", "util"], function (
           initiatives: [],
           loading: false,
           showCharts: false,
+          positive: 0,
+          negative: 0,
           error: false,
           message: "",
         };
@@ -79,6 +81,8 @@ define(["vue", "vega-embed", "config", "util"], function (
                 vega("#negative-chart", config.negative(title, hourly.items));
 
                 this.showCharts = true;
+                this.positive = util.maxPositive(list.items);
+                this.negative = util.maxNegative(list.items);
                 this.error = false;
               } else {
                 this.error = true;
