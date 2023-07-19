@@ -1,12 +1,12 @@
 mod data;
 
+use self::data::HourRow;
 use self::data::HourlyParams;
 use self::data::ListParams;
 use self::data::Reply;
 use self::data::ReplyItem;
 use crate::database::Database;
 use crate::database::VoteData;
-use crate::votes::data::HourRow;
 use std::convert::Infallible;
 
 const HOUR_SECONDS: i64 = 3_600;
@@ -72,11 +72,17 @@ pub async fn hourly(
             }
 
             // Set skipped hours to previous values.
-            for index in 0..hours as usize - 1 {
-                let positive = rows[index].positive();
-                let negative = rows[index].negative();
+            let mut iter = rows.iter_mut();
 
-                rows[index + 1].merge(positive, negative);
+            if let Some(row) = iter.next() {
+                let mut positive = row.positive();
+                let mut negative = row.negative();
+
+                while let Some(row) = iter.next() {
+                    row.merge(positive, negative);
+                    positive = row.positive();
+                    negative = row.negative();
+                }
             }
 
             rows.into_iter()
