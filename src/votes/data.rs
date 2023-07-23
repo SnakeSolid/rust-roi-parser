@@ -113,7 +113,7 @@ impl HourlyParams {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HourRow {
     timestamp: i64,
     positive: u32,
