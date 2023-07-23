@@ -55,35 +55,28 @@ pub async fn hourly(
     let max_timestamp = items.iter().map(VoteData::timestamp).max();
     let result = match (min_timestamp, max_timestamp) {
         (Some(min_timestamp), Some(max_timestamp)) => {
-            let max_hours = (max_timestamp - min_timestamp) / HOUR_SECONDS;
+            let max_hours = (max_timestamp - min_timestamp - 1) / HOUR_SECONDS;
             let hours = (params.hours() as i64).min(max_hours);
+            let start_timestamp = max_timestamp - hours * HOUR_SECONDS;
             let mut rows: Vec<_> = (0..hours)
-                .map(|hour| HourRow::empty(max_timestamp - (hours - hour + 1) * HOUR_SECONDS))
+                .map(|hour| HourRow::empty(start_timestamp + hour * HOUR_SECONDS))
                 .collect();
 
-            for item in items {
-                let hours_ago = (max_timestamp - item.timestamp()) / HOUR_SECONDS;
+println!("items = {:?}", items);
 
-                if hours_ago < hours {
-                    let index = (hours - hours_ago - 1) as usize;
+
+            for item in items {
+                if item.timestamp() > start_timestamp {
+                    let index = ((item.timestamp() - start_timestamp - 1) / HOUR_SECONDS) as usize;
 
                     rows[index].merge(item.positive(), item.negative());
                 }
             }
 
-            // Set skipped hours to previous values.
-            let mut iter = rows.iter_mut();
+println!("rows = {:?}", rows);
 
-            if let Some(row) = iter.next() {
-                let mut positive = row.positive();
-                let mut negative = row.negative();
 
-                while let Some(row) = iter.next() {
-                    row.merge(positive, negative);
-                    positive = row.positive();
-                    negative = row.negative();
-                }
-            }
+            make_monotonic(&mut rows);
 
             rows.into_iter()
                 .filter_map(|item| ReplyItem::try_from(item).ok())
@@ -93,4 +86,19 @@ pub async fn hourly(
     };
 
     Ok(warp::reply::json(&Reply::list(result)))
+}
+
+fn make_monotonic(data: &mut [HourRow]) {
+    let mut iter = data.iter_mut();
+
+    if let Some(row) = iter.next() {
+        let mut positive = row.positive();
+        let mut negative = row.negative();
+
+        while let Some(row) = iter.next() {
+            row.merge(positive, negative);
+            positive = row.positive();
+            negative = row.negative();
+        }
+    }
 }
