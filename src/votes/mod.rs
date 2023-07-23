@@ -58,24 +58,8 @@ pub async fn hourly(
             let max_hours = (max_timestamp - min_timestamp - 1) / HOUR_SECONDS;
             let hours = (params.hours() as i64).min(max_hours);
             let start_timestamp = max_timestamp - hours * HOUR_SECONDS;
-            let mut rows: Vec<_> = (0..hours)
-                .map(|hour| HourRow::empty(start_timestamp + hour * HOUR_SECONDS))
-                .collect();
-
-println!("items = {:?}", items);
-
-
-            for item in items {
-                if item.timestamp() > start_timestamp {
-                    let index = ((item.timestamp() - start_timestamp - 1) / HOUR_SECONDS) as usize;
-
-                    rows[index].merge(item.positive(), item.negative());
-                }
-            }
-
-println!("rows = {:?}", rows);
-
-
+            let mut rows = make_hour_rows(start_timestamp, hours);
+            fill_hour_rows(start_timestamp, &items, &mut rows);
             make_monotonic(&mut rows);
 
             rows.into_iter()
@@ -86,6 +70,22 @@ println!("rows = {:?}", rows);
     };
 
     Ok(warp::reply::json(&Reply::list(result)))
+}
+
+fn make_hour_rows(from_timestamp: i64, hours: i64) -> Vec<HourRow> {
+    (0..hours)
+        .map(|hour| HourRow::empty(from_timestamp + hour * HOUR_SECONDS))
+        .collect()
+}
+
+fn fill_hour_rows(from_timestamp: i64, items: &[VoteData], rows: &mut [HourRow]) {
+    for item in items {
+        if item.timestamp() > from_timestamp {
+            let index = ((item.timestamp() - from_timestamp - 1) / HOUR_SECONDS) as usize;
+
+            rows[index].merge(item.positive(), item.negative());
+        }
+    }
 }
 
 fn make_monotonic(data: &mut [HourRow]) {
